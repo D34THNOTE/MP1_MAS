@@ -84,4 +84,16 @@ public class Details implements Serializable {
 
         this.accountNumber = accountNumber;
     }
+
+    @Override
+    public String toString() {
+        return "Details{" +
+                "city='" + city + '\'' +
+                ", street='" + street + '\'' +
+                ", country='" + country + '\'' +
+                ", postalCode='" + postalCode + '\'' +
+                ", bankName='" + bankName + '\'' +
+                ", accountNumber='" + accountNumber + '\'' +
+                '}';
+    }
 }

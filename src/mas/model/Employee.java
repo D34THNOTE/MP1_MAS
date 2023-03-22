@@ -21,25 +21,30 @@ public class Employee implements Serializable {
     private Set<String> programmingLanguages = new HashSet<>();
 
     // 3. Complex attribute
-    //TODO well, this
+    private Details empDetails;
 
+    // TODO: derived attribute, class method, method overriding, toString displaying unassigned supervisorID as 0
 
-    public Employee(long ID, String firstName, String lastName, String programmingLanguage) {
+    public Employee(long ID, String firstName, String lastName, String programmingLanguage,
+                    String city, String street, String country, String postalCode, String bankName, String accountNumber) {
         setID(ID);
         setFirstName(firstName);
         setLastName(lastName);
         addProgrammingLanguage(programmingLanguage);
+        this.empDetails = new Details(city, street, country, postalCode, bankName, accountNumber);
 
         extent.add(this);
     }
 
     // Constructor with the optional attribute
-    public Employee(long ID, String firstName, String lastName, String programmingLanguage, long supervisorID) {
+    public Employee(long ID, String firstName, String lastName, String programmingLanguage, long supervisorID,
+                    String city, String street, String country, String postalCode, String bankName, String accountNumber) {
         setID(ID);
         setFirstName(firstName);
         setLastName(lastName);
         setSupervisorID(supervisorID);
         addProgrammingLanguage(programmingLanguage);
+        this.empDetails = new Details(city, street, country, postalCode, bankName, accountNumber);
 
         extent.add(this);
     }
@@ -130,5 +135,16 @@ public class Employee implements Serializable {
         this.programmingLanguages.add(programmingLanguage);
     }
 
-
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "ID=" + ID +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", supervisorID=" + supervisorID +
+                ", companyName='" + companyName + '\'' +
+                ", programmingLanguages=" + programmingLanguages +
+                ", empDetails=" + empDetails +
+                '}';
+    }
 }
