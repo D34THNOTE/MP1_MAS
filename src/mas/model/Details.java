@@ -53,7 +53,6 @@ public class Details implements Serializable {
     }
 
     public void setPostalCode(String postalCode) {
-        // I assume any format of the postal code is viable for simplicity
         if (postalCode == null || postalCode.isBlank()) throw new IllegalArgumentException("Postal code is required");
 
         if (!postalCode.matches("\\d{2}-\\d{3}")) throw new IllegalArgumentException

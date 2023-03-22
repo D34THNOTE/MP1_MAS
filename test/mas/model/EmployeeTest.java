@@ -46,13 +46,18 @@ public class EmployeeTest {
     }
 
     @Test
-    public void testSetGetSupervisorID() {
+    public void testGetSupervisorID() {
+        assertNull(employee1.getSupervisorID());
+        employee1.setSupervisorID(2);
+        assertEquals(2, (long) employee1.getSupervisorID());
+    }
+    @Test
+    public void testSetSupervisorID() {
         assertThrows(IllegalArgumentException.class, () -> employee1.setSupervisorID(-1));
         assertThrows(IllegalArgumentException.class, () -> employee1.setSupervisorID(1));
         assertThrows(IllegalArgumentException.class, () -> employee2.setSupervisorID(1));
         assertThrows(IllegalArgumentException.class, () -> employee2.setSupervisorID(3));
-        employee1.setSupervisorID(2);
-        assertEquals(2, (long) employee1.getSupervisorID());
+
     }
 
     @Test
@@ -71,5 +76,12 @@ public class EmployeeTest {
         assertThrows(IllegalArgumentException.class, () -> employee1.addProgrammingLanguage(""));
         assertThrows(IllegalArgumentException.class, () -> employee1.addProgrammingLanguage("   "));
         assertThrows(IllegalArgumentException.class, () -> employee1.addProgrammingLanguage("Java"));
+    }
+
+    @Test
+    public void testGetNumberOfProgrammingLanguages() {
+        assertEquals(1, employee1.getNumberOfProgrammingLanguages());
+        employee1.addProgrammingLanguage("Ruby");
+        assertEquals(2, employee1.getNumberOfProgrammingLanguages());
     }
 }
