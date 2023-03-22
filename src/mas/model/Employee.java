@@ -53,6 +53,11 @@ public class Employee implements Serializable {
         return Collections.unmodifiableList(extent);
     }
 
+    // TODO is this allowed to stay?
+    public static void clearExtent() {
+        extent.clear();
+    }
+
     public long getID() {
         return ID;
     }

@@ -1,5 +1,6 @@
 package mas.model;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,25 +19,40 @@ public class EmployeeTest {
                 "Poland", "04-547", "PKO", "56347856835654");
     }
 
+    // Funny story. All but the first test would fail when I run EmployeeTest and I was extremely confused as to why. Turns out
+    // that @Before would try to re-initialize employee1(and 2) BEFORE every next test, but since the ID was already taken as every
+    // new Employee is added to the static "extent" list it would throw a "Passed ID is already taken" Exception. Therefore I had
+    // to make a .clearExtent() method, at least for now
+    @After
+    public void wipe() {
+        Employee.clearExtent();
+    }
+
     @Test
-    public void testSetFirstName() { // same for LastName so I won't test it
+    public void testSetGetFirstName() { // same for LastName so I won't test it
         assertThrows(IllegalArgumentException.class, () -> employee1.setFirstName(null));
         assertThrows(IllegalArgumentException.class, () -> employee1.setFirstName(""));
         assertThrows(IllegalArgumentException.class, () -> employee1.setFirstName("     "));
+        employee1.setFirstName("Test1");
+        assertEquals("Test1", employee1.getFirstName());
     }
 
     @Test
-    public void testSetID() {
+    public void testSetGetID() {
         assertThrows(IllegalArgumentException.class, () -> employee1.setID(-1));
         assertThrows(IllegalArgumentException.class, () -> employee1.setID(2));
+        employee1.setID(4);
+        assertEquals(4, employee1.getID());
     }
 
     @Test
-    public void testSetSupervisorID() {
+    public void testSetGetSupervisorID() {
         assertThrows(IllegalArgumentException.class, () -> employee1.setSupervisorID(-1));
         assertThrows(IllegalArgumentException.class, () -> employee1.setSupervisorID(1));
         assertThrows(IllegalArgumentException.class, () -> employee2.setSupervisorID(1));
         assertThrows(IllegalArgumentException.class, () -> employee2.setSupervisorID(3));
+        employee1.setSupervisorID(2);
+        assertEquals(2, (long) employee1.getSupervisorID());
     }
 
     @Test
@@ -49,5 +65,11 @@ public class EmployeeTest {
         assertEquals("TestCompName", Employee.getCompanyName());
     }
 
-
+    @Test
+    public void testAddProgrammingLanguage() {
+        assertThrows(IllegalArgumentException.class, () -> employee1.addProgrammingLanguage(null));
+        assertThrows(IllegalArgumentException.class, () -> employee1.addProgrammingLanguage(""));
+        assertThrows(IllegalArgumentException.class, () -> employee1.addProgrammingLanguage("   "));
+        assertThrows(IllegalArgumentException.class, () -> employee1.addProgrammingLanguage("Java"));
+    }
 }
