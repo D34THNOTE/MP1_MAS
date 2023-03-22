@@ -1,6 +1,7 @@
 package mas.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Details implements Serializable {
     // Address details
@@ -94,5 +95,18 @@ public class Details implements Serializable {
                 ", bankName='" + bankName + '\'' +
                 ", accountNumber='" + accountNumber + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Details details = (Details) o;
+        return city.equals(details.city) && street.equals(details.street) && country.equals(details.country) && postalCode.equals(details.postalCode) && bankName.equals(details.bankName) && accountNumber.equals(details.accountNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(city, street, country, postalCode, bankName, accountNumber);
     }
 }

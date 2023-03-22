@@ -65,9 +65,9 @@ public class Employee implements Serializable {
     public void setID(long ID) {
         // long is a primitive time which isn't nullable, so don't need to check for nulls
         if(ID < 0) throw new IllegalArgumentException("ID must be a positive number");
-        for (Employee possibleDuplicateID: extent) {
-            if(possibleDuplicateID.getID() == ID) throw new IllegalArgumentException("Passed ID is already taken");
-        }
+//        for (Employee possibleDuplicateID: extent) {
+//            if(possibleDuplicateID.getID() == ID) throw new IllegalArgumentException("Passed ID is already taken");
+//        }
 
         this.ID = ID;
     }
