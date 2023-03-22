@@ -11,8 +11,8 @@ public class Employee implements Serializable {
     private long ID;
     private String firstName, lastName;
 
-    // 4. Optional attribute
-    private long supervisorID;
+    // 4. Optional attribute(using Long instead of long to make it nullable)
+    private Long supervisorID = null;
 
     // 7. Class attribute
     private static String companyName;
@@ -22,8 +22,6 @@ public class Employee implements Serializable {
 
     // 3. Complex attribute
     private Details empDetails;
-
-    // TODO: derived attribute, class method, method overriding, toString displaying unassigned supervisorID as 0
 
     public Employee(long ID, String firstName, String lastName, String programmingLanguage,
                     String city, String street, String country, String postalCode, String bankName, String accountNumber) {
@@ -36,7 +34,7 @@ public class Employee implements Serializable {
         extent.add(this);
     }
 
-    // Constructor with the optional attribute
+    // 11. Constructor with the optional attribute(Constructor overloading)
     public Employee(long ID, String firstName, String lastName, String programmingLanguage, long supervisorID,
                     String city, String street, String country, String postalCode, String bankName, String accountNumber) {
         setID(ID);
@@ -49,6 +47,7 @@ public class Employee implements Serializable {
         extent.add(this);
     }
 
+    // 9. Class method
     public static List<Employee> getExtent() {
         // unmodifiable
         return Collections.unmodifiableList(extent);
@@ -85,10 +84,11 @@ public class Employee implements Serializable {
 
     public void setLastName(String lastName) {
         if(lastName == null || lastName.isBlank()) throw new IllegalArgumentException("Last name is required");
+
         this.lastName = lastName;
     }
 
-    public long getSupervisorID() {
+    public Long getSupervisorID() {
         return supervisorID;
     }
 
@@ -96,7 +96,7 @@ public class Employee implements Serializable {
         if(supervisorID < 0) throw new IllegalArgumentException("ID must be a positive number");
 
         if (this.ID == supervisorID) throw new IllegalArgumentException("An employee cannot be their own supervisor");
-        if (this.supervisorID == supervisorID) throw new IllegalArgumentException("This ID is already set as the supervisor for the chosen employee");
+        if (this.supervisorID != null && this.supervisorID == supervisorID) throw new IllegalArgumentException("This ID is already set as the supervisor for the chosen employee");
 
         boolean foundSupervisor = false;
         for (Employee supervisorExists: extent) {
@@ -135,13 +135,19 @@ public class Employee implements Serializable {
         this.programmingLanguages.add(programmingLanguage);
     }
 
+    // 8. Derived attribute
+    public int getNumberOfProgrammingLanguages() {
+        return this.programmingLanguages.size();
+    }
+
+    // 10. Method overriding
     @Override
     public String toString() {
         return "Employee{" +
                 "ID=" + ID +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", supervisorID=" + supervisorID +
+                ", supervisorID=" + (supervisorID == null ? "Unassigned" : supervisorID) +
                 ", companyName='" + companyName + '\'' +
                 ", programmingLanguages=" + programmingLanguages +
                 ", empDetails=" + empDetails +
