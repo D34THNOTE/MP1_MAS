@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 public class EmployeeTest {
 
     private Employee employee1;
-    private Employee employee2;
+    private Employee employee2; // employee1 is this employee's supervisor
 
     @Before
     public void setup() {
@@ -23,6 +23,30 @@ public class EmployeeTest {
         assertThrows(IllegalArgumentException.class, () -> employee1.setFirstName(null));
         assertThrows(IllegalArgumentException.class, () -> employee1.setFirstName(""));
         assertThrows(IllegalArgumentException.class, () -> employee1.setFirstName("     "));
+    }
+
+    @Test
+    public void testSetID() {
+        assertThrows(IllegalArgumentException.class, () -> employee1.setID(-1));
+        assertThrows(IllegalArgumentException.class, () -> employee1.setID(2));
+    }
+
+    @Test
+    public void testSetSupervisorID() {
+        assertThrows(IllegalArgumentException.class, () -> employee1.setSupervisorID(-1));
+        assertThrows(IllegalArgumentException.class, () -> employee1.setSupervisorID(1));
+        assertThrows(IllegalArgumentException.class, () -> employee2.setSupervisorID(1));
+        assertThrows(IllegalArgumentException.class, () -> employee2.setSupervisorID(3));
+    }
+
+    @Test
+    public void testSetGetCompanyName() {
+        assertThrows(IllegalArgumentException.class, () -> Employee.setCompanyName(null));
+        assertThrows(IllegalArgumentException.class, () -> Employee.setCompanyName(""));
+        assertThrows(IllegalArgumentException.class, () -> Employee.setCompanyName("   "));
+        Employee.setCompanyName("TestCompName");
+        assertThrows(IllegalArgumentException.class, () -> Employee.setCompanyName("TestCompName"));
+        assertEquals("TestCompName", Employee.getCompanyName());
     }
 
 

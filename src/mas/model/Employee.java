@@ -61,7 +61,7 @@ public class Employee implements Serializable {
         // long is a primitive time which isn't nullable, so don't need to check for nulls
         if(ID < 0) throw new IllegalArgumentException("ID must be a positive number");
         for (Employee possibleDuplicateID: extent) {
-            if(possibleDuplicateID.getID() == ID) throw new IllegalArgumentException("Passed ID is already taken by a different employee");
+            if(possibleDuplicateID.getID() == ID) throw new IllegalArgumentException("Passed ID is already taken");
         }
 
         this.ID = ID;
@@ -110,13 +110,15 @@ public class Employee implements Serializable {
         if(!foundSupervisor) throw new IllegalArgumentException("Supervisor ID must exist in the system");
     }
 
-    public String getCompanyName() {
+    // 9. Class method
+    public static String getCompanyName() {
         return Employee.companyName;
     }
 
-    public void setCompanyName(String companyName) {
+    // 9. Class method
+    public static void setCompanyName(String companyName) {
         if(companyName == null || companyName.isBlank()) throw new IllegalArgumentException("Company name cannot be empty");
-        if(Employee.companyName.equals(companyName)) throw new IllegalArgumentException("Entered company name is already used");
+        if(Employee.companyName != null && Employee.companyName.equals(companyName)) throw new IllegalArgumentException("Entered company name is already used");
 
         Employee.companyName = companyName;
     }
