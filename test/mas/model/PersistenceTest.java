@@ -71,6 +71,13 @@ public class PersistenceTest {
             e.printStackTrace();
         }
 
+//        Employee emp1 = new Employee(3, "David", "McCoffee", "Java", "Warsaw", "Qwerty",
+//                "Poland", "12-467", "PKO", "09854987539446");
+//
+//        // Comment out checking for ID uniqueness in Employee before running this
+//        assertEquals(emp1, new Employee(3, "David", "McCoffee", "Java", "Warsaw", "Qwerty",
+//                "Poland", "12-467", "PKO", "09854987539446"));
+
         List<Employee> expectedList = Collections.unmodifiableList(extentCopy);
         for (int i=0; i < expectedList.size(); i++) {
             System.out.println(expectedList.get(i));
