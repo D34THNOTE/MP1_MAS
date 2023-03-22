@@ -1,6 +1,6 @@
 package mas.model;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
 public class Employee implements Serializable {
@@ -18,7 +18,7 @@ public class Employee implements Serializable {
     private static String companyName;
 
     // 6. Multi-value attribute(assumption: every employee has to know at least one programming language to be employed)
-    private Set<String> programmingLanguages = new HashSet<>();
+    private Set<String> programmingLanguages = new LinkedHashSet<>();
 
     // 3. Complex attribute
     private Details empDetails;
@@ -159,5 +159,38 @@ public class Employee implements Serializable {
                 ", programmingLanguages=" + programmingLanguages +
                 ", empDetails=" + empDetails +
                 '}';
+    }
+
+    public static void saveExtent(String path) {
+        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(path))) {
+            outputStream.writeObject(extent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked") // They told me to do this: https://stackoverflow.com/questions/5201555/unchecked-cast-warning-how-to-avoid-this
+    public static void loadExtent(String path) throws FileNotFoundException {
+        File file = new File(path);
+        if (!file.exists()) throw new FileNotFoundException("No file was found for the provided path");
+
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(path))) {
+            extent = (ArrayList<Employee>) inputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Employee employee = (Employee) o;
+        return ID == employee.ID && firstName.equals(employee.firstName) && lastName.equals(employee.lastName) && Objects.equals(supervisorID, employee.supervisorID) && programmingLanguages.equals(employee.programmingLanguages) && empDetails.equals(employee.empDetails);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ID, firstName, lastName, supervisorID, programmingLanguages, empDetails);
     }
 }
