@@ -1,9 +1,7 @@
 package mas.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Employee implements Serializable {
     // 1. Class extent
@@ -17,13 +15,34 @@ public class Employee implements Serializable {
     private long supervisorID;
 
     // 7. Class attribute
-    private String companyName;
+    private static String companyName;
 
     // 6. Multi-value attribute(assumption: every employee has to know at least one programming language to be employed)
-    private List<String> programmingLanguages;
+    private Set<String> programmingLanguages = new HashSet<>();
 
     // 3. Complex attribute
     //TODO well, this
+
+
+    public Employee(long ID, String firstName, String lastName, String programmingLanguage) {
+        setID(ID);
+        setFirstName(firstName);
+        setLastName(lastName);
+        addProgrammingLanguage(programmingLanguage);
+
+        extent.add(this);
+    }
+
+    // Constructor with the optional attribute
+    public Employee(long ID, String firstName, String lastName, String programmingLanguage, long supervisorID) {
+        setID(ID);
+        setFirstName(firstName);
+        setLastName(lastName);
+        setSupervisorID(supervisorID);
+        addProgrammingLanguage(programmingLanguage);
+
+        extent.add(this);
+    }
 
     public static List<Employee> getExtent() {
         // unmodifiable
@@ -71,9 +90,8 @@ public class Employee implements Serializable {
     public void setSupervisorID(long supervisorID) {
         if(supervisorID < 0) throw new IllegalArgumentException("ID must be a positive number");
 
-        if (this.supervisorID == supervisorID) {
-            throw new IllegalArgumentException("This ID is already set as the supervisor for the chosen employee");
-        }
+        if (this.ID == supervisorID) throw new IllegalArgumentException("An employee cannot be their own supervisor");
+        if (this.supervisorID == supervisorID) throw new IllegalArgumentException("This ID is already set as the supervisor for the chosen employee");
 
         boolean foundSupervisor = false;
         for (Employee supervisorExists: extent) {
@@ -88,19 +106,29 @@ public class Employee implements Serializable {
     }
 
     public String getCompanyName() {
-        return companyName;
+        return Employee.companyName;
     }
 
     public void setCompanyName(String companyName) {
-        
-        this.companyName = companyName;
+        if(companyName == null || companyName.isBlank()) throw new IllegalArgumentException("Company name cannot be empty");
+        if(Employee.companyName.equals(companyName)) throw new IllegalArgumentException("Entered company name is already used");
+
+        Employee.companyName = companyName;
     }
 
-    public List<String> getProgrammingLanguages() {
-        return programmingLanguages;
+    public Set<String> getProgrammingLanguages() {
+        return Collections.unmodifiableSet(programmingLanguages);
     }
 
-    public void setProgrammingLanguages(List<String> programmingLanguages) {
-        this.programmingLanguages = programmingLanguages;
+    public void addProgrammingLanguage(String programmingLanguage) {
+        if(programmingLanguage == null || programmingLanguage.isBlank()) throw new IllegalArgumentException("Cannot add an empty input for programming language");
+
+        // Check for duplicate
+        if (programmingLanguages.contains(programmingLanguage)) throw new IllegalArgumentException
+                (programmingLanguage + " programming language already exists for this employee");
+
+        this.programmingLanguages.add(programmingLanguage);
     }
+
+
 }
