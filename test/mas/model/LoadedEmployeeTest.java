@@ -4,14 +4,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import static org.junit.Assert.*;
 
-public class EmployeeTest {
-
+public class LoadedEmployeeTest {
     private Employee employee1;
     private Details details1;
     private Employee employee2; // employee1 is this employee's supervisor
     private Details details2;
+    private String TEST_FILE_PATH = "test.dat";
 
     @Before
     public void setup() {
@@ -22,6 +26,13 @@ public class EmployeeTest {
 
         employee1 = new Employee(1, "David", "Town", "Java", details1);
         employee2 = new Employee(2, "Pant", "John", "Python", 1, details2);
+
+        Employee.saveExtent(TEST_FILE_PATH);
+        try {
+            Employee.loadExtent(TEST_FILE_PATH);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     // Funny story. All but the first test would fail when I run EmployeeTest and I was extremely confused as to why. Turns out
@@ -31,6 +42,22 @@ public class EmployeeTest {
     @After
     public void wipe() {
         Employee.clearExtent();
+    }
+    @After
+    public void deleteFile() {
+        Employee.clearExtent();
+
+        boolean success = false;
+        File file = new File(TEST_FILE_PATH);
+        if (file.exists()) {
+            success = file.delete();
+        }
+
+        try {
+            if(!success) throw new IOException("There was a problem deleting the file");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

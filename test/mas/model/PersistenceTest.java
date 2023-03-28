@@ -26,20 +26,21 @@ public class PersistenceTest {
 
     @Before
     public void setup() {
-        employee1 = new Employee(1, "David", "McCoffee", "Java", "Warsaw", "Qwerty",
-                "Poland", "12-467", "PKO", "09854987539446");
-        employee2 = new Employee(2, "Manson", "Zegar", "Java", "Warsaw", "Collection",
-                "Poland", "04-453", "mBank", "1987678456");
-        employee3 = new Employee(3, "Filip", "Office", "Python", 1, "Warsaw", "Internet",
-                "Poland", "04-877", "PKO", "58296575656");
-        employee4 = new Employee(4, "John", "Mazur", "Ruby", 3, "Warsaw", "Cool",
-                "Poland", "04-279", "C3PO", "1094765677654356");
-        employee5 = new Employee(5, "Kuba", "Głowacki", "SQL", 3, "Warsaw", "Hyper",
-                "Poland", "04-098", "mBank", "190376584563");
+        employee1 = new Employee(1, "David", "McCoffee", "Java", new Details("Warsaw", "Qwerty",
+                "Poland", "12-467", "PKO", "09854987539446"));
+        employee2 = new Employee(2, "Manson", "Zegar", "Java", new Details("Warsaw", "Collection",
+                "Poland", "04-453", "mBank", "1987678456"));
+        employee3 = new Employee(3, "Filip", "Office", "Python", 1, new Details("Warsaw", "Internet",
+                "Poland", "04-877", "PKO", "58296575656"));
+        employee4 = new Employee(4, "John", "Mazur", "Ruby", 3, new Details("Warsaw", "Cool",
+                "Poland", "04-279", "C3PO", "1094765677654356"));
+        employee5 = new Employee(5, "Kuba", "Głowacki", "SQL", 3, new Details("Warsaw", "Hyper",
+                "Poland", "04-098", "mBank", "190376584563"));
         employee1.addProgrammingLanguage("SecondProgramming");
         employee1.addProgrammingLanguage("ThirdProgramming");
         employee2.addProgrammingLanguage("Ruby");
         employee3.addProgrammingLanguage("C++");
+        Employee.setCompanyName("TestSavedName");
 
         extentCopy = new ArrayList<>(Employee.getExtent());
     }
@@ -72,5 +73,6 @@ public class PersistenceTest {
         }
 
         assertEquals(Collections.unmodifiableList(extentCopy), Employee.getExtent());
+        assertEquals("TestSavedName", Employee.getCompanyName());
     }
 }

@@ -24,25 +24,27 @@ public class Employee implements Serializable {
     private Details empDetails;
 
     public Employee(long ID, String firstName, String lastName, String programmingLanguage,
-                    String city, String street, String country, String postalCode, String bankName, String accountNumber) {
+                    Details details) {
         setID(ID);
         setFirstName(firstName);
         setLastName(lastName);
         addProgrammingLanguage(programmingLanguage);
-        this.empDetails = new Details(city, street, country, postalCode, bankName, accountNumber);
+        this.empDetails = details;
+        //this.empDetails = new Details(city, street, country, postalCode, bankName, accountNumber);
 
         extent.add(this);
     }
 
     // 11. Constructor with the optional attribute(Constructor overloading)
     public Employee(long ID, String firstName, String lastName, String programmingLanguage, long supervisorID,
-                    String city, String street, String country, String postalCode, String bankName, String accountNumber) {
+                    Details details) {
         setID(ID);
         setFirstName(firstName);
         setLastName(lastName);
         setSupervisorID(supervisorID);
         addProgrammingLanguage(programmingLanguage);
-        this.empDetails = new Details(city, street, country, postalCode, bankName, accountNumber);
+        this.empDetails = details;
+        //this.empDetails = new Details(city, street, country, postalCode, bankName, accountNumber);
 
         extent.add(this);
     }
@@ -163,7 +165,9 @@ public class Employee implements Serializable {
 
     public static void saveExtent(String path) {
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(path))) {
+            // order is important!!
             outputStream.writeObject(extent);
+            outputStream.writeObject(companyName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -175,7 +179,9 @@ public class Employee implements Serializable {
         if (!file.exists()) throw new FileNotFoundException("No file was found for the provided path");
 
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(path))) {
+            // order is important!!
             extent = (ArrayList<Employee>) inputStream.readObject();
+            companyName = (String) inputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
