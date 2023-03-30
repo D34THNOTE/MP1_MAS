@@ -40,10 +40,6 @@ public class LoadedEmployeeTest {
     // new Employee is added to the static "extent" list it would throw a "Passed ID is already taken" Exception. Therefore I had
     // to make a .clearExtent() method, at least for now
     @After
-    public void wipe() {
-        Employee.clearExtent();
-    }
-    @After
     public void deleteFile() {
         Employee.clearExtent();
 
