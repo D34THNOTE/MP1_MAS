@@ -30,7 +30,7 @@ public class EmployeeTest {
     // to make a .clearExtent() method, at least for now
     @After
     public void wipe() {
-        Employee.clearExtent();
+        Employee.removeEmployee();
     }
 
     @Test

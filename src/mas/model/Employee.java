@@ -1,6 +1,8 @@
 package mas.model;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.*;
 
 public class Employee implements Serializable {
@@ -10,54 +12,67 @@ public class Employee implements Serializable {
     // 5. Mandatory attribute
     private long ID;
     private String firstName, lastName;
+    private LocalDate birthDate;
 
-    // 4. Optional attribute(using Long instead of long to make it nullable)
-    private Long supervisorID = null;
+    // 4. Optional attribute
+    private String middleName = null;
 
     // 7. Class attribute
     private static String companyName;
 
-    // 6. Multi-value attribute(assumption: every employee has to know at least one programming language to be employed)
+    // 6. Multi-value attribute(assumption: a potential employee has to know at least one programming language to be employed)
     private Set<String> programmingLanguages = new LinkedHashSet<>();
 
     // 3. Complex attribute
     private Details empDetails;
 
-    public Employee(long ID, String firstName, String lastName, String programmingLanguage,
+    // TODO list of changes:
+    // TODO supervisorID -> middleName                                                              DONE
+    // TODO clearExtent -> removeEmployee                                                           DONE
+    // TODO added birthDate                                                                         DONE
+    // TODO zrobić class method find employee with longest something, or most programming languages DONE
+    // TODO zrobić derived attribute                                                                DONE
+
+    // TODO test dla zmian na górze
+    // TODO test dla removeProgrammingLanguages
+    // TODO test dla findEmployeeWithMostLanguages
+    // TODO setter for details
+
+    public Employee(long ID, String firstName, String lastName, LocalDate birthDate, String programmingLanguage,
                     Details details) {
         setID(ID);
         setFirstName(firstName);
         setLastName(lastName);
+        setBirthDate(birthDate);
         addProgrammingLanguage(programmingLanguage);
         this.empDetails = details;
-        //this.empDetails = new Details(city, street, country, postalCode, bankName, accountNumber);
 
         extent.add(this);
     }
 
     // 11. Constructor with the optional attribute(Constructor overloading)
-    public Employee(long ID, String firstName, String lastName, String programmingLanguage, long supervisorID,
-                    Details details) {
+    public Employee(long ID, String firstName, String lastName, String middleName, LocalDate birthDate, String programmingLanguage, Details details) {
         setID(ID);
         setFirstName(firstName);
         setLastName(lastName);
-        setSupervisorID(supervisorID);
+        setMiddleName(middleName);
+        setBirthDate(birthDate);
         addProgrammingLanguage(programmingLanguage);
         this.empDetails = details;
-        //this.empDetails = new Details(city, street, country, postalCode, bankName, accountNumber);
 
         extent.add(this);
     }
 
-    // 9. Class method
     public static List<Employee> getExtent() {
         // unmodifiable
         return Collections.unmodifiableList(extent);
     }
 
-    // TODO is this allowed to stay?
-    public static void clearExtent() {
-        extent.clear();
+    public static void removeEmployee(Employee e) {
+        if(e == null) throw new IllegalArgumentException("Please choose an employee to remove");
+        if(!extent.contains(e)) throw new IllegalArgumentException("Chosen employee doesn't exist in the system");
+
+        extent.remove(e);
     }
 
     public long getID() {
@@ -95,34 +110,32 @@ public class Employee implements Serializable {
         this.lastName = lastName;
     }
 
-    public Long getSupervisorID() {
-        return supervisorID;
+    public String getMiddleName() {
+        return middleName;
     }
 
-    public void setSupervisorID(long supervisorID) {
-        if(supervisorID < 0) throw new IllegalArgumentException("ID must be a positive number");
+    public void setMiddleName(String middleName) {
+        // This allows middleName to be set to null
+        if(middleName != null && middleName.isBlank()) throw new IllegalArgumentException("Middle name cannot consist of only whitespaces");
 
-        if (this.ID == supervisorID) throw new IllegalArgumentException("An employee cannot be their own supervisor");
-        if (this.supervisorID != null && this.supervisorID == supervisorID) throw new IllegalArgumentException("This ID is already set as the supervisor for the chosen employee");
-
-        boolean foundSupervisor = false;
-        for (Employee supervisorExists: extent) {
-            if(supervisorExists.getID() == supervisorID) {
-                this.supervisorID = supervisorID;
-                foundSupervisor = true;
-                break;
-            }
-        }
-
-        if(!foundSupervisor) throw new IllegalArgumentException("Supervisor ID must exist in the system");
+        this.middleName = middleName;
     }
 
-    // 9. Class method
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        if (birthDate == null) throw new IllegalArgumentException("Birth date is required");
+        if (birthDate.isAfter(LocalDate.now())) throw new IllegalArgumentException("Birth date cannot be a date past the current moment");
+
+        this.birthDate = birthDate;
+    }
+
     public static String getCompanyName() {
         return Employee.companyName;
     }
 
-    // 9. Class method
     public static void setCompanyName(String companyName) {
         if(companyName == null || companyName.isBlank()) throw new IllegalArgumentException("Company name cannot be empty");
         if(Employee.companyName != null && Employee.companyName.equals(companyName)) throw new IllegalArgumentException("Entered company name is already used");
@@ -144,23 +157,34 @@ public class Employee implements Serializable {
         this.programmingLanguages.add(programmingLanguage);
     }
 
-    // 8. Derived attribute
-    public int getNumberOfProgrammingLanguages() {
-        return this.programmingLanguages.size();
+    public void removeProgrammingLanguage(String programmingLanguage) {
+        if(programmingLanguage == null || programmingLanguage.isBlank()) throw new IllegalArgumentException("Pass a non-empty language to remove");
+        if(!programmingLanguages.contains(programmingLanguage)) throw new IllegalArgumentException("Passed language isn't assigned to this employee");
+
+        programmingLanguages.remove(programmingLanguage);
     }
 
-    // 10. Method overriding
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "ID=" + ID +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", supervisorID=" + (supervisorID == null ? "Unassigned" : supervisorID) +
-                ", companyName='" + companyName + '\'' +
-                ", programmingLanguages=" + programmingLanguages +
-                ", empDetails=" + empDetails +
-                '}';
+    public Details getEmpDetails() {
+        return empDetails;
+    }
+    // 8. Derived attribute
+    public int getAge() {
+        Period age = Period.between(birthDate, LocalDate.now());
+        return age.getYears();
+    }
+
+    // 9. Class method - operates on class extent
+    public Employee findEmployeeWithMostLanguages() {
+        if(extent.isEmpty()) throw new IllegalStateException("No employees exist in the system");
+
+        Employee mostLanguagesEmployee = extent.get(0);
+        for(int i=1; i < extent.size(); i++) {
+            if(extent.get(i).getProgrammingLanguages().size() > mostLanguagesEmployee.getProgrammingLanguages().size()) {
+                mostLanguagesEmployee = extent.get(i);
+            }
+        }
+
+        return mostLanguagesEmployee;
     }
 
     public static void saveExtent(String path) {
@@ -187,16 +211,31 @@ public class Employee implements Serializable {
         }
     }
 
+    // 10. Method overriding
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "ID=" + ID +
+                ", firstName='" + firstName + '\'' +
+                (middleName == null ? "" : ", middleName='" + middleName) + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", age=" + getAge() +
+                ", birthDate=" + birthDate +
+                ", programmingLanguages=" + programmingLanguages +
+                ", empDetails=" + empDetails +
+                '}';
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Employee employee = (Employee) o;
-        return ID == employee.ID && firstName.equals(employee.firstName) && lastName.equals(employee.lastName) && Objects.equals(supervisorID, employee.supervisorID) && programmingLanguages.equals(employee.programmingLanguages) && empDetails.equals(employee.empDetails);
+        return ID == employee.ID && firstName.equals(employee.firstName) && lastName.equals(employee.lastName) && birthDate.equals(employee.birthDate) && Objects.equals(middleName, employee.middleName) && programmingLanguages.equals(employee.programmingLanguages) && empDetails.equals(employee.empDetails);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ID, firstName, lastName, supervisorID, programmingLanguages, empDetails);
+        return Objects.hash(ID, firstName, lastName, birthDate, middleName, programmingLanguages, empDetails);
     }
 }

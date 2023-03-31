@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -47,7 +46,7 @@ public class PersistenceTest {
 
     @After
     public void deleteFile() {
-        Employee.clearExtent();
+        Employee.removeEmployee();
 
         boolean success = false;
         File file = new File(TEST_FILE_PATH);

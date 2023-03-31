@@ -41,7 +41,7 @@ public class LoadedEmployeeTest {
     // to make a .clearExtent() method, at least for now
     @After
     public void deleteFile() {
-        Employee.clearExtent();
+        Employee.removeEmployee();
 
         boolean success = false;
         File file = new File(TEST_FILE_PATH);
