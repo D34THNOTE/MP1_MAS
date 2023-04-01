@@ -4,13 +4,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.instrument.UnmodifiableClassException;
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class EmployeeTest {
 
     private Employee employee1;
     private Details details1;
-    private Employee employee2; // employee1 is this employee's supervisor
+    private Employee employee2;
     private Details details2;
 
     @Before
@@ -20,17 +25,31 @@ public class EmployeeTest {
         details2 = new Details("Warsaw", "Rybacka",
                 "Poland", "04-547", "PKO", "56347856835654");
 
-        employee1 = new Employee(1, "David", "Town", "Java", details1);
-        employee2 = new Employee(2, "Pant", "John", "Python", 1, details2);
+        employee1 = new Employee(1, "David", "Town", LocalDate.of(1999, 6, 24),
+                "Java", details1);
+
+        employee2 = new Employee(2, "Pant", "Gary", "John", LocalDate.of(1995, 6, 24),
+                "Python", details2);
+        employee1.addProgrammingLanguage("Python");
+        employee1.addProgrammingLanguage("C++");
+
+        employee2.addProgrammingLanguage("Ruby");
     }
 
-    // Funny story. All but the first test would fail when I run EmployeeTest and I was extremely confused as to why. Turns out
-    // that @Before would try to re-initialize employee1(and 2) BEFORE every next test, but since the ID was already taken as every
-    // new Employee is added to the static "extent" list it would throw a "Passed ID is already taken" Exception. Therefore I had
-    // to make a .clearExtent() method, at least for now
     @After
     public void wipe() {
-        Employee.removeEmployee();
+        List<Employee> toRemove = Arrays.asList(employee1, employee2);
+        for (Employee e : toRemove) {
+            Employee.removeEmployee(e);
+        }
+    }
+
+    @Test
+    public void testSetGetID() {
+        assertThrows(IllegalArgumentException.class, () -> employee1.setID(-1));
+        assertThrows(IllegalArgumentException.class, () -> employee1.setID(2));
+        employee1.setID(4);
+        assertEquals(4, employee1.getID());
     }
 
     @Test
@@ -43,26 +62,30 @@ public class EmployeeTest {
     }
 
     @Test
-    public void testSetGetID() {
-        assertThrows(IllegalArgumentException.class, () -> employee1.setID(-1));
-        assertThrows(IllegalArgumentException.class, () -> employee1.setID(2));
-        employee1.setID(4);
-        assertEquals(4, employee1.getID());
+    public void testSetGetMiddleName() { // the optional attribute
+        assertThrows(IllegalArgumentException.class, () -> employee1.setMiddleName(""));
+        assertThrows(IllegalArgumentException.class, () -> employee1.setMiddleName("     "));
+        employee1.setMiddleName(null);
+        assertNull(employee1.getMiddleName());
+        employee1.setMiddleName("Rich");
+        assertEquals("Rich", employee1.getMiddleName());
     }
 
     @Test
-    public void testGetSupervisorID() {
-        assertNull(employee1.getSupervisorID());
-        employee1.setSupervisorID(2);
-        assertEquals(2, (long) employee1.getSupervisorID());
+    public void testSetGetBirthdate() {
+        assertThrows(IllegalArgumentException.class, () -> employee1.setBirthDate(null));
+        assertThrows(IllegalArgumentException.class, () -> employee1.setBirthDate(LocalDate.now().plusDays(1)));
+        employee1.setBirthDate(LocalDate.of(2001, 4, 4));
+        assertEquals(LocalDate.of(2001, 4, 4), employee1.getBirthDate());
     }
-    @Test
-    public void testSetSupervisorID() {
-        assertThrows(IllegalArgumentException.class, () -> employee1.setSupervisorID(-1));
-        assertThrows(IllegalArgumentException.class, () -> employee1.setSupervisorID(1));
-        assertThrows(IllegalArgumentException.class, () -> employee2.setSupervisorID(1));
-        assertThrows(IllegalArgumentException.class, () -> employee2.setSupervisorID(3));
 
+    @Test
+    public void testSetGetDetails() {
+        Details newDetails = new Details("Test", "Streeeeet",
+                "Kotlet Country", "27-475", "S.A", "086785745367");
+
+        employee1.setEmpDetails(newDetails);
+        assertEquals(newDetails, employee1.getEmpDetails());
     }
 
     @Test
@@ -76,17 +99,69 @@ public class EmployeeTest {
     }
 
     @Test
-    public void testAddProgrammingLanguage() {
+    public void testGetAge() { // derived attribute
+        // birthday today case
+        LocalDate today = LocalDate.now();
+        LocalDate relativeToTestEarly = today.minusYears(25);
+        employee1.setBirthDate(relativeToTestEarly);
+
+        assertEquals(25, employee1.getAge());
+
+        // birthday tomorrow case
+        LocalDate relativeToTestLate_years = today.minusYears(25);
+        LocalDate relativeToTestLate = relativeToTestLate_years.plusDays(1);
+        employee1.setBirthDate(relativeToTestLate);
+        assertEquals(24, employee1.getAge());
+
+
+        employee1.setBirthDate(LocalDate.now());
+        assertEquals(0, employee1.getAge());
+    }
+
+    @Test
+    public void testFindEmployeeWithMostLanguages() { // class method
+        assertEquals(employee1, Employee.findEmployeeWithMostLanguages());
+    }
+
+    @Test
+    public void testAddRemoveGetProgrammingLanguage() {
         assertThrows(IllegalArgumentException.class, () -> employee1.addProgrammingLanguage(null));
         assertThrows(IllegalArgumentException.class, () -> employee1.addProgrammingLanguage(""));
         assertThrows(IllegalArgumentException.class, () -> employee1.addProgrammingLanguage("   "));
         assertThrows(IllegalArgumentException.class, () -> employee1.addProgrammingLanguage("Java"));
+
+        assertThrows(IllegalArgumentException.class, () -> employee1.removeProgrammingLanguage(null));
+        assertThrows(IllegalArgumentException.class, () -> employee1.removeProgrammingLanguage(""));
+        assertThrows(IllegalArgumentException.class, () -> employee1.removeProgrammingLanguage("   "));
+        assertThrows(IllegalArgumentException.class, () -> employee1.removeProgrammingLanguage("DoesntExist"));
+
+        String testString = "TestProgrammingLanguage";
+        employee1.addProgrammingLanguage(testString);
+        assertTrue(employee1.getProgrammingLanguages().contains(testString));
+        employee1.removeProgrammingLanguage(testString);
+        assertFalse(employee1.getProgrammingLanguages().contains(testString));
+
+        // testing unmodifiable list
+        assertThrows(UnsupportedOperationException.class, () -> employee1.getProgrammingLanguages().add("Cheetos"));
+        assertFalse(employee1.getProgrammingLanguages().contains("Cheetos"));
+
+        // testing removing last element
+        employee1.removeProgrammingLanguage("Python");
+        employee1.removeProgrammingLanguage("C++");
+        assertThrows(IllegalArgumentException.class, () -> employee1.removeProgrammingLanguage("Java"));
     }
 
     @Test
-    public void testGetNumberOfProgrammingLanguages() {
-        assertEquals(1, employee1.getNumberOfProgrammingLanguages());
-        employee1.addProgrammingLanguage("Ruby");
-        assertEquals(2, employee1.getNumberOfProgrammingLanguages());
+    public void testGetExtent() {
+        assertThrows(UnsupportedOperationException.class, () -> Employee.getExtent().remove(Employee.getExtent().get(0)));
+
+        try {
+            Employee employee3 = new Employee(3, "David", "Town", "  ", LocalDate.of(1999, 6, 24),
+                    "Java", details1);
+        } catch (IllegalArgumentException e) {
+
+        }
+
+        assertThrows(IndexOutOfBoundsException.class, () -> System.out.println(Employee.getExtent().get(2)));
     }
 }

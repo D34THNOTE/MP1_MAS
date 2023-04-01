@@ -26,18 +26,6 @@ public class Employee implements Serializable {
     // 3. Complex attribute
     private Details empDetails;
 
-    // TODO list of changes:
-    // TODO supervisorID -> middleName                                                              DONE
-    // TODO clearExtent -> removeEmployee                                                           DONE
-    // TODO added birthDate                                                                         DONE
-    // TODO zrobić class method find employee with longest something, or most programming languages DONE
-    // TODO zrobić derived attribute                                                                DONE
-
-    // TODO test dla zmian na górze
-    // TODO test dla removeProgrammingLanguages
-    // TODO test dla findEmployeeWithMostLanguages
-    // TODO setter for details
-
     public Employee(long ID, String firstName, String lastName, LocalDate birthDate, String programmingLanguage,
                     Details details) {
         setID(ID);
@@ -158,8 +146,9 @@ public class Employee implements Serializable {
     }
 
     public void removeProgrammingLanguage(String programmingLanguage) {
-        if(programmingLanguage == null || programmingLanguage.isBlank()) throw new IllegalArgumentException("Pass a non-empty language to remove");
+        if(programmingLanguage == null || programmingLanguage.isBlank()) throw new IllegalArgumentException("Pass a non-empty language name to remove it");
         if(!programmingLanguages.contains(programmingLanguage)) throw new IllegalArgumentException("Passed language isn't assigned to this employee");
+        if((programmingLanguages.size() <= 1)) throw new IllegalArgumentException("Cannot remove the last language from the employee's list");
 
         programmingLanguages.remove(programmingLanguage);
     }
@@ -167,6 +156,11 @@ public class Employee implements Serializable {
     public Details getEmpDetails() {
         return empDetails;
     }
+
+    public void setEmpDetails(Details empDetails) {
+        this.empDetails = empDetails;
+    }
+
     // 8. Derived attribute
     public int getAge() {
         Period age = Period.between(birthDate, LocalDate.now());
@@ -174,7 +168,7 @@ public class Employee implements Serializable {
     }
 
     // 9. Class method - operates on class extent
-    public Employee findEmployeeWithMostLanguages() {
+    public static Employee findEmployeeWithMostLanguages() {
         if(extent.isEmpty()) throw new IllegalStateException("No employees exist in the system");
 
         Employee mostLanguagesEmployee = extent.get(0);
