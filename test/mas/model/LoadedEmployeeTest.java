@@ -156,6 +156,10 @@ public class LoadedEmployeeTest {
         expectedList.add(employee3);
         assertEquals(expectedList, Employee.findEmployeesWithMostLanguages());
 
+        // Don't need to remove it like in EmployeeTest because here we reload extent from file for every test, leaving this here because I found
+        // it interesting
+        //Employee.removeEmployee(employee3);
+
         // To test the code below add method addEmployee similar to removeEmployee to Employee class temporarily, as the @After will fail if we don't add then back
 //        Employee.removeEmployee(Employee.getExtent().get(0));
 //        Employee.removeEmployee(Employee.getExtent().get(1));
@@ -191,7 +195,7 @@ public class LoadedEmployeeTest {
     }
 
     @Test
-    public void testGetExtent() {
+    public void testGetAddExtent() {
         assertThrows(UnsupportedOperationException.class, () -> Employee.getExtent().remove(Employee.getExtent().get(0)));
 
         try {
@@ -200,5 +204,9 @@ public class LoadedEmployeeTest {
         } catch (IllegalArgumentException ignored) {}
 
         assertThrows(IndexOutOfBoundsException.class, () -> System.out.println(Employee.getExtent().get(2)));
+
+        Employee employee3 = new Employee(3, "Marry", "Town", "snikch", LocalDate.of(1999, 6, 24),
+                "Java", details1);
+        assertTrue(Employee.getExtent().contains(employee3));
     }
 }

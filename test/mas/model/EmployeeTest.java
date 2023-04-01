@@ -139,6 +139,9 @@ public class EmployeeTest {
         expectedList.add(employee3);
         assertEquals(expectedList, Employee.findEmployeesWithMostLanguages());
 
+        // Remove it because it will stay in extent and affect other tests
+        Employee.removeEmployee(employee3);
+
         // To test the code below add method addEmployee similar to removeEmployee to Employee class temporarily, as the @After will fail if we don't add then back
 //        Employee.removeEmployee(employee1);
 //        Employee.removeEmployee(employee2);
@@ -176,7 +179,7 @@ public class EmployeeTest {
     }
 
     @Test
-    public void testGetExtent() {
+    public void testGetAddExtent() {
         assertThrows(UnsupportedOperationException.class, () -> Employee.getExtent().remove(Employee.getExtent().get(0)));
 
         try {
@@ -184,6 +187,11 @@ public class EmployeeTest {
                     "Java", details1);
         } catch (IllegalArgumentException ignored) {}
 
+        System.out.println(Employee.getExtent());
         assertThrows(IndexOutOfBoundsException.class, () -> System.out.println(Employee.getExtent().get(2)));
+
+        Employee employee3 = new Employee(3, "Marry", "Town", "snikch", LocalDate.of(1999, 6, 24),
+                "Java", details1);
+        assertTrue(Employee.getExtent().contains(employee3));
     }
 }
