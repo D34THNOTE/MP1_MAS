@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 public class LoadedEmployeeTest {
     private Employee employee1;
     private Details details1;
-    private Employee employee2; // employee1 is this employee's supervisor
+    private Employee employee2;
     private Details details2;
     private String TEST_FILE_PATH = "test.dat";
 
