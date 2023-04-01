@@ -125,7 +125,7 @@ public class LoadedEmployeeTest {
 
     @Test
     public void testFindEmployeeWithMostLanguages() { // class method
-        assertEquals(employee1, Employee.findEmployeeWithMostLanguages());
+        assertEquals(employee1, Employee.findEmployeesWithMostLanguages());
     }
 
     @Test

@@ -4,8 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.instrument.UnmodifiableClassException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -75,8 +75,10 @@ public class EmployeeTest {
     public void testSetGetBirthdate() {
         assertThrows(IllegalArgumentException.class, () -> employee1.setBirthDate(null));
         assertThrows(IllegalArgumentException.class, () -> employee1.setBirthDate(LocalDate.now().plusDays(1)));
-        employee1.setBirthDate(LocalDate.of(2001, 4, 4));
-        assertEquals(LocalDate.of(2001, 4, 4), employee1.getBirthDate());
+
+        LocalDate testBd = LocalDate.of(2001, 4, 4);
+        employee1.setBirthDate(testBd);
+        assertEquals(testBd, employee1.getBirthDate());
     }
 
     @Test
@@ -120,7 +122,29 @@ public class EmployeeTest {
 
     @Test
     public void testFindEmployeeWithMostLanguages() { // class method
-        assertEquals(employee1, Employee.findEmployeeWithMostLanguages());
+        ArrayList<Employee> expectedList = new ArrayList<>(Arrays.asList(employee1));
+        assertEquals(expectedList, Employee.findEmployeesWithMostLanguages());
+
+        employee2.addProgrammingLanguage("C++");
+        expectedList.add(employee2);
+        assertEquals(expectedList, Employee.findEmployeesWithMostLanguages());
+
+        // Adding employee with 4 languages when the rest has 3
+        Employee employee3 = new Employee(3, "Thomas", "Train", LocalDate.of(2003, 11, 11),
+                "Node.js", details2);
+        employee3.addProgrammingLanguage("R");
+        employee3.addProgrammingLanguage("Assembly64");
+        employee3.addProgrammingLanguage("Assembly65");
+        expectedList.clear();
+        expectedList.add(employee3);
+        assertEquals(expectedList, Employee.findEmployeesWithMostLanguages());
+
+        // To test the code below add method addEmployee similar to removeEmployee to Employee class temporarily, as the @After will fail if we don't add then back
+//        Employee.removeEmployee(employee1);
+//        Employee.removeEmployee(employee2);
+//        assertThrows(IllegalStateException.class, () -> Employee.findEmployeeWithMostLanguages());
+//        Employee.addEmployee(employee1);
+//        Employee.addEmployee(employee2);
     }
 
     @Test
@@ -158,9 +182,7 @@ public class EmployeeTest {
         try {
             Employee employee3 = new Employee(3, "David", "Town", "  ", LocalDate.of(1999, 6, 24),
                     "Java", details1);
-        } catch (IllegalArgumentException e) {
-
-        }
+        } catch (IllegalArgumentException ignored) {}
 
         assertThrows(IndexOutOfBoundsException.class, () -> System.out.println(Employee.getExtent().get(2)));
     }

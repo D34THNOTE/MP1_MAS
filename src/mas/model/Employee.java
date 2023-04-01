@@ -168,17 +168,25 @@ public class Employee implements Serializable {
     }
 
     // 9. Class method - operates on class extent
-    public static Employee findEmployeeWithMostLanguages() {
+    public static ArrayList<Employee> findEmployeesWithMostLanguages() {
         if(extent.isEmpty()) throw new IllegalStateException("No employees exist in the system");
 
         Employee mostLanguagesEmployee = extent.get(0);
+        ArrayList<Employee> returnList = new ArrayList<>(Arrays.asList(mostLanguagesEmployee));
+
         for(int i=1; i < extent.size(); i++) {
+            if(extent.get(i).getProgrammingLanguages().size() == mostLanguagesEmployee.getProgrammingLanguages().size()) {
+                returnList.add(extent.get(i));
+            }
+
             if(extent.get(i).getProgrammingLanguages().size() > mostLanguagesEmployee.getProgrammingLanguages().size()) {
+                returnList.clear();
                 mostLanguagesEmployee = extent.get(i);
+                returnList.add(mostLanguagesEmployee);
             }
         }
 
-        return mostLanguagesEmployee;
+        return returnList;
     }
 
     public static void saveExtent(String path) {
