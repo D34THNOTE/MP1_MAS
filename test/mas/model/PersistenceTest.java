@@ -46,6 +46,7 @@ public class PersistenceTest {
         employee1.addProgrammingLanguage("ThirdProgramming");
         employee2.addProgrammingLanguage("Ruby");
         employee3.addProgrammingLanguage("C++");
+
         Employee.setCompanyName("TestSavedName");
 
         extentCopy = new ArrayList<>(Employee.getExtent());
