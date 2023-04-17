@@ -33,7 +33,7 @@ public class Employee implements Serializable {
         setLastName(lastName);
         setBirthDate(birthDate);
         addProgrammingLanguage(programmingLanguage);
-        this.empDetails = details;
+        setEmpDetails(details);
 
         extent.add(this);
     }
@@ -158,6 +158,8 @@ public class Employee implements Serializable {
     }
 
     public void setEmpDetails(Details empDetails) {
+        if(empDetails == null) throw new IllegalArgumentException("Details for a new Employee are required");
+
         this.empDetails = empDetails;
     }
 

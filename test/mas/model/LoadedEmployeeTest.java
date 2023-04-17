@@ -98,6 +98,7 @@ public class LoadedEmployeeTest {
 
     @Test
     public void testSetGetDetails() {
+        assertThrows(IllegalArgumentException.class, () -> employee1.setEmpDetails(null));
         Details newDetails = new Details("Test", "Streeeeet",
                 "Kotlet Country", "27-475", "S.A", "086785745367");
 
